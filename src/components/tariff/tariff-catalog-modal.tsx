@@ -26,6 +26,7 @@ export function TariffCatalogModal({ isOpen, onClose, initialQuery }: { isOpen: 
       }}>
         <input required minLength={3} maxLength={2000} aria-label="Product description or 12-digit HS code" placeholder="Product description or 12-digit HS code" className="min-w-0 flex-1 rounded border p-2 dark:bg-slate-800" value={description} onChange={event => setDescription(event.target.value)} />
         <button disabled={busy} className="rounded bg-emerald-700 px-4 text-white">{busy ? 'Checking sources…' : 'Search'}</button>
+        <a href="https://eservices.zatca.gov.sa/sites/sc/en/tariff/Pages/TariffPages/TariffSearch.aspx" target="_blank" rel="noopener noreferrer" className="flex items-center whitespace-nowrap rounded border px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">ZATCA Portal</a>
       </form>
       <ProductDetailsFields value={details} onChange={setDetails} />
       {error && <p role="alert">{error}</p>}
@@ -36,7 +37,7 @@ export function TariffCatalogModal({ isOpen, onClose, initialQuery }: { isOpen: 
         <p dir="auto">{result.classificationEvidence.certificateRequirements}</p>
         <p>{result.classificationEvidence.matchReason}</p>
         <RankedCandidates evidence={result.classificationEvidence} />
-        <div className="flex gap-4">{[['ZATCA', result.classificationEvidence.zatcaUrl]].map(([name, url]) => <a key={name} className="underline" href={url} target="_blank" rel="noopener noreferrer">{name}</a>)}</div>
+        <div className="flex gap-4">{[['ZATCA Result', result.classificationEvidence.zatcaUrl], ['ZATCA Search Portal', 'https://eservices.zatca.gov.sa/sites/sc/en/tariff/Pages/TariffPages/TariffSearch.aspx']].map(([name, url]) => <a key={name} className="underline" href={url} target="_blank" rel="noopener noreferrer">{name}</a>)}</div>
         <p>Checked: {new Date(result.classificationEvidence.checkedAt).toLocaleString()}</p>
         {result.classificationEvidence.warnings.map(warning => <p key={warning} className="text-amber-700">{warning}</p>)}
       </div>}
