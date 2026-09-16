@@ -4,7 +4,8 @@ import { searchZatca, ZATCA_SEARCH_URL, type SearchResult, type TariffRow } from
 import { money } from './invoice-valuation';
 import { searchHsReference, type ReferenceSuggestion } from './hs-reference';
 
-export const SOURCE_URLS = { zatca: ZATCA_SEARCH_URL };
+export const SABER_SEARCH_URL = 'https://saber.sa/home/hscodesearch';
+export const SOURCE_URLS = { zatca: ZATCA_SEARCH_URL, saber: SABER_SEARCH_URL };
 export interface SourceEvidence {
   referenceSuggestions?: ReferenceSuggestion[];
   valuation?: { customsValue: number; allocatedCharges: number };

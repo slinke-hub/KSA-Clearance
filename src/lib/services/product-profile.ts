@@ -64,6 +64,7 @@ export function buildProductProfile(description: string, supplied: ProductDetail
   else if (/moulding|grille|towing cover|lower engine cover/.test(text)) set('vehicle body trim', ['870829'], [['body','أبدان']], [], details.material && details.use ? [] : ['Confirm material and body-fitting function; trim must not be classified as a complete bonnet or fender.']);
   else if (/apron|fender|side panel/.test(text)) set('vehicle body panel', ['870829'], [['panel','fender','الجوانب','الرفارف','واجهات']], [], /apron/.test(text) && !/structural|body panel/.test(text) ? ['Confirm whether the apron is a structural body panel or bumper trim.'] : []);
   else if (/tank/.test(text)) set('tank or reservoir', [], [['tank','reservoir','خزان']], ['lorry','lorrie','ship','trailer'], details.material && details.use ? [] : ['Specify the tank material, contents and function (air intake, fuel, washer fluid, coolant, etc.).']);
+  else if (/radiator/.test(text)) set('cooling part', ['870891'], [['radiator', 'مبرد', 'cooling part']], []);
   else if (/laptop|notebook|حاسوب محمول|لابتوب/.test(text)) set('laptop', ['847130'], [['laptop','notebook','حاسوب محمول']], ['tablet']);
   else if (/tablet|جهاز لوحي/.test(text)) set('tablet', ['847130'], [['tablet','لوحي']], ['laptop']);
   else if (/smartphone|mobile phone|هاتف ذكي|جوال/.test(text)) set('smartphone', ['851713'], [['smartphone','هاتف ذكي']]);
