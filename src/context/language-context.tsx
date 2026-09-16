@@ -5,7 +5,7 @@ import { Language, translations } from '@/lib/i18n/translations';
 
 export type UserRole = 'ADMIN' | 'AGENT' | 'AUDITOR';
 export type Theme = 'light' | 'dark';
-export type NavigationTab = 'console' | 'ingestion' | 'tariff' | 'regulations' | 'audit';
+export type NavigationTab = 'console' | 'ingestion' | 'tariff' | 'regulations' | 'audit' | 'admin';
 
 interface AppContextType {
   language: Language;

@@ -344,6 +344,85 @@ export default function ClearanceDashboard() {
           </div>
         )}
 
+        {/* Tab 6: Admin Console */}
+        {activeTab === 'admin' && role === 'ADMIN' && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-lg">
+                    {language === 'ar' ? 'إدارة الفواتير' : 'Invoice Management'}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {language === 'ar' ? 'استعرض واحذف الفواتير المرفوعة' : 'Explore and delete uploaded invoices'}
+                  </p>
+                </div>
+                <button type="button" onClick={handleBulkDelete} className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700">
+                  <Trash2 className="h-4 w-4" />
+                  {language === 'ar' ? 'حذف الجميع' : 'Delete All'}
+                </button>
+              </div>
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
+                    <tr>
+                      <th className="px-4 py-3 font-semibold">{language === 'ar' ? 'رقم الفاتورة' : 'Invoice Number'}</th>
+                      <th className="px-4 py-3 font-semibold">{language === 'ar' ? 'المصدر' : 'Exporter'}</th>
+                      <th className="px-4 py-3 font-semibold">{language === 'ar' ? 'المبلغ' : 'Amount'}</th>
+                      <th className="px-4 py-3 font-semibold">{language === 'ar' ? 'التاريخ' : 'Date'}</th>
+                      <th className="px-4 py-3 font-semibold text-right">{language === 'ar' ? 'الإجراءات' : 'Actions'}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {invoices.map((inv) => (
+                      <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{inv.invoiceNumber}</td>
+                        <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{inv.exporterName}</td>
+                        <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{inv.totalAmount} {inv.currency}</td>
+                        <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{new Date(inv.createdAt).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-GB')}</td>
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            onClick={async () => {
+                              if (!window.confirm(language === 'ar' ? 'هل أنت متأكد من حذف هذه الفاتورة؟' : 'Are you sure you want to delete this invoice?')) return;
+                              setIsLoading(true);
+                              try {
+                                const res = await fetch('/api/invoices/bulk', {
+                                  method: 'DELETE',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ ids: [inv.id], userId: 'user-admin-01' })
+                                });
+                                if (res.ok) {
+                                  setInvoices(prev => prev.filter(i => i.id !== inv.id));
+                                  if (selectedInvoiceId === inv.id) setSelectedInvoiceId(null);
+                                }
+                              } catch (e) {
+                                console.error(e);
+                              } finally {
+                                setIsLoading(false);
+                              }
+                            }}
+                            className="text-red-500 hover:text-red-700 p-2"
+                            title={language === 'ar' ? 'حذف' : 'Delete'}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {invoices.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-slate-400 text-xs">
+                          {language === 'ar' ? 'لا توجد فواتير' : 'No invoices found'}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* Footer */}

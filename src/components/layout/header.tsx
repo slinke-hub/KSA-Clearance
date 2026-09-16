@@ -16,12 +16,14 @@ export function Header({ onOpenAuditLogs, onOpenCatalog }: HeaderProps) {
     setAccent(value); document.documentElement.dataset.accent = value;
     try { localStorage.setItem('ksa_accent', value); } catch { /* Keep the selection for this session. */ }
   };
-  const nav: {id: NavigationTab; en: string; ar: string; icon: typeof LayoutDashboard}[] = [
+  const navItems: {id: NavigationTab; en: string; ar: string; icon: any; adminOnly?: boolean}[] = [
     {id:'console',en:'Workspace',ar:'مساحة العمل',icon:LayoutDashboard},
     {id:'ingestion',en:'Upload invoice',ar:'رفع فاتورة',icon:UploadCloud},
     {id:'tariff',en:'HS library & search',ar:'مكتبة الرموز والبحث',icon:BookOpen},
     {id:'audit',en:'Activity & audit',ar:'النشاط والتدقيق',icon:History},
+    {id:'admin',en:'Admin Console',ar:'لوحة الإدارة',icon:ShieldCheck,adminOnly:true},
   ];
+  const nav = navItems.filter(item => !item.adminOnly || role === 'ADMIN');
   return <header className="app-navigation">
     <a href="#workspace" className="skip-link">{ar ? 'انتقل إلى المحتوى' : 'Skip to workspace'}</a>
     <div className="nav-brand"><span className="brand-mark"><ShieldCheck className="h-6 w-6" /></span><div><strong>{ar ? 'مسار التخليص' : 'Clearance'}</strong><span>{ar ? 'مساحة عمل الاستيراد' : 'THE IMPORT WORKSPACE'}</span></div></div>
