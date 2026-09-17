@@ -96,46 +96,46 @@ export function ClearanceSummaryCard({
       {/* 4 Financial KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-5">
         {/* Total CIF Value */}
-        <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-850">
+        <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 p-3.5 dark:border-emerald-800 dark:bg-emerald-950/20">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300">
               {language === 'ar' ? 'قيمة الفاتورة' : 'Invoice value'}
             </span>
-            <Receipt className="h-4 w-4 text-slate-400" />
+            <Receipt className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
           </div>
-          <div className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
+          <div className="mt-2 text-xl font-black text-emerald-800 dark:text-emerald-200">
             {formatSAR(totalCif)}
           </div>
-          <span className="text-[10px] text-slate-400">Invoice currency; includes recorded adjustments</span>
-          {invoice.charges?.map((charge, index) => <p key={index} className="text-[10px] text-slate-500">{charge.label}: {formatSAR(charge.amount)}</p>)}
+          <span className="text-[10px] text-emerald-700 dark:text-emerald-400">Invoice currency; includes recorded adjustments</span>
+          {invoice.charges?.map((charge, index) => <p key={index} className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80">{charge.label}: {formatSAR(charge.amount)}</p>)}
         </div>
 
         {/* Total Customs Duties */}
-        <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-850">
+        <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 p-3.5 dark:border-emerald-800 dark:bg-emerald-950/20">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300">
               {t.totalDuty}
             </span>
-            <Coins className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <Coins className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
           </div>
-          <div className="mt-2 text-xl font-bold text-emerald-600 dark:text-emerald-400">
+          <div className="mt-2 text-xl font-black text-emerald-800 dark:text-emerald-200">
             {hasUnknownFees ? 'Needs review' : formatSAR(totalDuty)}
           </div>
-          <span className="text-[10px] text-slate-400">Estimate using live ZATCA rates</span>
+          <span className="text-[10px] text-emerald-700 dark:text-emerald-400">Estimate using live ZATCA rates</span>
         </div>
 
         {/* Total 15% VAT */}
-        <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-850">
+        <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 p-3.5 dark:border-emerald-800 dark:bg-emerald-950/20">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300">
               {t.totalVat}
             </span>
-            <Calculator className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <Calculator className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
           </div>
-          <div className="mt-2 text-xl font-bold text-blue-600 dark:text-blue-400">
+          <div className="mt-2 text-xl font-black text-emerald-800 dark:text-emerald-200">
             {hasUnknownFees ? 'Needs review' : formatSAR(totalVat)}
           </div>
-          <span className="text-[10px] text-slate-400">Standard VAT estimate; exemptions not assessed</span>
+          <span className="text-[10px] text-emerald-700 dark:text-emerald-400">Standard VAT estimate; exemptions not assessed</span>
         </div>
 
         {/* Grand Total Landed Cost */}
