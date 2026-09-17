@@ -27,19 +27,33 @@ export async function predictHsCode(description: string, details: ProductDetails
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash', systemInstruction: SYSTEM_PROMPT });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.6-flash', systemInstruction: SYSTEM_PROMPT });
 
     const prompt = `Product Description: "${description}"\nAdditional Details: ${JSON.stringify(details)}`;
     
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.1, // Low temperature for factual classification
-        responseMimeType: 'application/json',
+    let responseText = '';
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        const result = await model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: 'application/json',
+          }
+        });
+        responseText = result.response.text();
+        break;
+      } catch (err: any) {
+        if (err.status === 503 && retries > 1) {
+          retries--;
+          await new Promise(r => setTimeout(r, 2000));
+        } else {
+          throw err;
+        }
       }
-    });
+    }
 
-    const responseText = result.response.text();
     const parsed = JSON.parse(responseText);
     
     if (parsed && typeof parsed.hsCode === 'string' && /^\d{6}$/.test(parsed.hsCode)) {
