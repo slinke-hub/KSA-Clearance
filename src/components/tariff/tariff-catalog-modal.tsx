@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { safeFetchJson } from '@/lib/utils/api-client';
 import type { SourceEvidence } from '@/lib/services/official-classification';
 import type { ProductDetails } from '@/lib/services/product-profile';
@@ -13,8 +14,8 @@ export function TariffCatalogModal({ isOpen, onClose, initialQuery }: { isOpen: 
   const [details, setDetails] = useState<ProductDetails>({});
   const [result, setResult] = useState<{ matchedHsCode: string | null; dutyRate: number | null; regulatoryStatus: string; classificationEvidence: SourceEvidence } | null>(null);
   useEffect(()=>{if(isOpen){setDescription(initialQuery ?? '');setDetails({});setResult(null);setError('');}},[isOpen,initialQuery]);
-  if (!isOpen) return null;
-  return <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+  if (!isOpen || typeof document === 'undefined') return null;
+  return createPortal(<div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
     <section role="dialog" aria-modal="true" aria-label="Live tariff lookup" className="max-h-[85vh] w-full max-w-3xl overflow-auto rounded-2xl bg-white p-6 text-slate-900 shadow-xl dark:bg-slate-900 dark:text-white">
       <div className="flex justify-between"><h2 className="text-lg font-bold">Live ZATCA lookup</h2><button onClick={onClose} aria-label="Close tariff lookup">Close</button></div>
       <form className="my-4 flex gap-2" onSubmit={async event => {
@@ -45,5 +46,5 @@ export function TariffCatalogModal({ isOpen, onClose, initialQuery }: { isOpen: 
         {result.classificationEvidence.warnings.map(warning => <p key={warning} className="text-amber-700">{warning}</p>)}
       </div>}
     </section>
-  </div>;
+  </div>, document.body);
 }

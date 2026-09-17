@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '@/context/language-context';
 import { LineItemEntity } from '@/types/invoice';
 import { ProductDetailsFields } from '@/components/tariff/product-details-fields';
@@ -260,7 +261,7 @@ export function LineItemsTable({
       </div>
 
       {/* Override HS Code Modal */}
-      {selectedItemForOverride && (
+      {selectedItemForOverride && typeof document !== 'undefined' ? createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
           <div role="dialog" aria-modal="true" aria-label="Review tariff match" className="max-h-[85vh] overflow-y-auto w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -351,9 +352,9 @@ export function LineItemsTable({
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </div>,
+        document.body
+      ) : null}
     </section>
   );
 }
-
