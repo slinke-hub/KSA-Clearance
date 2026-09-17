@@ -64,54 +64,47 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    const newInvoice = await prisma.$transaction(async (tx) => {
-      const invoice = await tx.invoice.create({
-        data: {
-          invoiceNumber: validated.invoiceNumber,
-          exporterName: validated.exporterName,
-          importerName: validated.importerName,
-          currency: validated.currency,
-          totalAmount: validated.totalAmount,
-          charges: validated.charges as any,
-          storagePath: validated.storagePath,
-          fileHash: validated.fileHash,
-          status: 'PENDING',
-          createdById: userId,
-          lineItems: {
-            create: validated.lineItems.map((item, index) => {
-              const classification = results[index];
+    const newInvoice = await prisma.invoice.create({
+      data: {
+        invoiceNumber: validated.invoiceNumber,
+        exporterName: validated.exporterName,
+        importerName: validated.importerName,
+        currency: validated.currency,
+        totalAmount: validated.totalAmount,
+        charges: validated.charges as any,
+        storagePath: validated.storagePath,
+        fileHash: validated.fileHash,
+        status: 'PENDING',
+        createdById: userId,
+        lineItems: {
+          create: validated.lineItems.map((item, index) => {
+            const classification = results[index];
 
-              return {
-                lineNumber: item.lineNumber,
-                description: item.description,
-                quantity: item.quantity,
-                unitValue: item.unitValue,
-                totalValue: item.totalValue,
-                countryOfOrigin: item.countryOfOrigin,
-                declaredHsCode: item.declaredHsCode || undefined,
-                matchedHsCode: classification.matchedHsCode || undefined,
-                dutyRate: classification.dutyRate ?? undefined,
-                vatRate: classification.vatRate ?? undefined,
-                calculatedDutyFee: classification.calculatedDutyFee ?? undefined,
-                calculatedVatFee: classification.calculatedVatFee ?? undefined,
-                regulatoryStatus: classification.regulatoryStatus as any,
-                requiredCertificates: classification.requiredCertificates,
-                confidenceScore: classification.confidenceScore,
-                classificationEvidence: JSON.parse(JSON.stringify(classification.classificationEvidence)),
-                verifiedByUser: false,
-              };
-            }),
-          },
+            return {
+              lineNumber: item.lineNumber,
+              description: item.description,
+              quantity: item.quantity,
+              unitValue: item.unitValue,
+              totalValue: item.totalValue,
+              countryOfOrigin: item.countryOfOrigin,
+              declaredHsCode: item.declaredHsCode || undefined,
+              matchedHsCode: classification.matchedHsCode || undefined,
+              dutyRate: classification.dutyRate ?? undefined,
+              vatRate: classification.vatRate ?? undefined,
+              calculatedDutyFee: classification.calculatedDutyFee ?? undefined,
+              calculatedVatFee: classification.calculatedVatFee ?? undefined,
+              regulatoryStatus: classification.regulatoryStatus as any,
+              requiredCertificates: classification.requiredCertificates,
+              confidenceScore: classification.confidenceScore,
+              classificationEvidence: JSON.parse(JSON.stringify(classification.classificationEvidence)),
+              verifiedByUser: false,
+            };
+          }),
         },
-        include: {
-          lineItems: true,
-        },
-      });
-
-      return invoice;
-    }, {
-      maxWait: 10000,  // max time to acquire a connection (10s)
-      timeout: 30000,  // max transaction duration (30s)
+      },
+      include: {
+        lineItems: true,
+      },
     });
 
     // Write audit log outside the transaction — best-effort, non-blocking.
