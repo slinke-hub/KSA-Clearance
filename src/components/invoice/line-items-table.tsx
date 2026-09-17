@@ -210,7 +210,17 @@ export function LineItemsTable({
               {evidence?.normalizedDescription && <p className="mb-2 text-xs text-slate-600 dark:text-slate-300"><strong>{label('Recognized description: ', 'الوصف المستخلص: ')}</strong><span dir="auto">{evidence.normalizedDescription}</span></p>}
               <label htmlFor={`suggested-hs-${item.id}`} className="mb-2 block text-xs font-semibold text-slate-800 dark:text-slate-200">{label('Suggested HS codes · ZATCA & SABER', 'الرموز المقترحة · الهيئة وسابر')} ({suggestions.length})</label>
               <select id={`suggested-hs-${item.id}`} value="" disabled={role === 'AUDITOR' || isUpdating || retryProgress !== null || !suggestions.length}
-                onChange={event=>{if(!event.target.value)return;setSelectedItemForOverride(item);setOverrideHs(event.target.value);setProductDetails(evidence?.productDetails ?? {});}}
+                onChange={event=>{
+                  const val = event.target.value;
+                  if(!val) return;
+                  import('react').then(({startTransition}) => {
+                    startTransition(() => {
+                      setSelectedItemForOverride(item);
+                      setOverrideHs(val);
+                      setProductDetails(evidence?.productDetails ?? {});
+                    });
+                  });
+                }}
                 className="w-full min-w-0 rounded-lg border border-slate-300 bg-white p-2 text-sm text-slate-900 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
                 <option value="">{suggestions.length ? label('Choose a suggestion to review…', 'اختر اقتراحاً للمراجعة…') : label('No suitable suggestions — recheck or add product details', 'لا توجد اقتراحات مناسبة — أعد الفحص أو أضف تفاصيل المنتج')}</option>
                 {suggestions.map(candidate=><option key={candidate.hsCode} value={candidate.hsCode}>{candidate.hsCode} — {candidate.description} [{candidate.sourceLabel}]{candidate.heading ? ` (${candidate.heading})` : ''}</option>)}
@@ -230,7 +240,15 @@ export function LineItemsTable({
               {role !== 'AUDITOR' && <div className="flex flex-wrap gap-2">
                 <button type="button" className={buttonStyle} disabled={isUpdating || retryProgress !== null} onClick={async()=>{setIsUpdating(true);try{const result=await safeFetchJson(`/api/invoices/${invoiceId}/line-items/${item.lineNumber}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshSources:true})});if(!result.success)alert(result.error);else onItemUpdated();}finally{setIsUpdating(false);}}}><RefreshCw className="h-3.5 w-3.5" />{label('Recheck', 'إعادة الفحص')}</button>
                 <button type="button" className={buttonStyle} disabled={!canVerify || isUpdating || retryProgress !== null} onClick={()=>toggleVerification(item.lineNumber,item.verifiedByUser)} aria-pressed={item.verifiedByUser} title={!canVerify ? label('Resolve tariff and customs-control details first', 'استكمل بيانات التصنيف والمتطلبات أولاً') : undefined}><Check className="h-3.5 w-3.5" />{item.verifiedByUser ? label('Undo review', 'إلغاء المراجعة') : label('Mark reviewed', 'اعتماد المراجعة')}</button>
-                <button type="button" disabled={isUpdating || retryProgress !== null} onClick={()=>{setSelectedItemForOverride(item);setOverrideHs(item.matchedHsCode || '');setProductDetails(evidence?.productDetails ?? {});}} className="rounded-lg bg-emerald-700 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 disabled:opacity-40">{label('Review match', 'مراجعة المطابقة')}</button>
+                <button type="button" disabled={isUpdating || retryProgress !== null} onClick={()=>{
+                  import('react').then(({startTransition}) => {
+                    startTransition(() => {
+                      setSelectedItemForOverride(item);
+                      setOverrideHs(item.matchedHsCode || '');
+                      setProductDetails(evidence?.productDetails ?? {});
+                    });
+                  });
+                }} className="rounded-lg bg-emerald-700 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 disabled:opacity-40">{label('Review match', 'مراجعة المطابقة')}</button>
               </div>}
             </div>
           </article>;
@@ -250,7 +268,7 @@ export function LineItemsTable({
                 {language === 'ar' ? 'مراجعة تصنيف البند' : 'Review product details and tariff matches'}
               </h3>
               <button
-                onClick={() => setSelectedItemForOverride(null)}
+                onClick={() => import('react').then(({startTransition}) => startTransition(() => setSelectedItemForOverride(null)))}
                 className="text-slate-400 hover:text-slate-600"
               >
                 &times;
@@ -318,8 +336,9 @@ export function LineItemsTable({
 
             <div className="mt-5 flex justify-end gap-2">
               <button
-                onClick={() => setSelectedItemForOverride(null)}
-                className="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                type="button"
+                onClick={() => import('react').then(({startTransition}) => startTransition(() => setSelectedItemForOverride(null)))}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 {t.cancel}
               </button>
