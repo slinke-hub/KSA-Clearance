@@ -3,6 +3,7 @@ import { currentDuty, rankTariffs, selectTariff, zatcaControls, type ControlStat
 import { searchZatca, ZATCA_SEARCH_URL, type SearchResult, type TariffRow } from './zatca-client';
 import { money } from './invoice-valuation';
 import { searchHsReference, type ReferenceSuggestion } from './hs-reference';
+import { predictHsCode } from './ai-classifier';
 
 export const SABER_SEARCH_URL = 'https://saber.sa/Home/HSCodes?query=HPxiVlpYoUlXdk3Qw67Ge7vnHFk1166UizQ8gft7TcBwibkaCCiRkQxrTVWTCYtwDbc8eUwJ2S7+81vPghojL01SQuTjOKdHga3ww4h63gLycVWNHOew0A4OTSuSQGnGekGk72ru+EwFTIhVvKsiI3+diLKSec6N4tu4V4b3i3A1CcIVpEAeujxlmSuRarI/SybzIorCkqcwrvTp7N7ZGR/IJaqNj7YAWEEt/2v4TQ2Xm+LnT2oBRGTTypZGFFcXtGDtcCNPThzhmUSUOECGeMS+bkmJWWLAM5ZW/Tpas/dK3WYr42p/vZ9FVM58gNgNFgfAsfKm4SvkNmJIFLf64cTv2RbaPemOUOPRUVL1zik=';
 export const SOURCE_URLS = { zatca: ZATCA_SEARCH_URL, saber: SABER_SEARCH_URL };
@@ -72,6 +73,13 @@ export async function classifyFromOfficialSources(description: string, customsVa
       for (const query of profile.searchTerms) {
         await retrieve(query, 1);
         if (failed || selectTariff(rankTariffs([...records.values()], profile), profile)) break;
+      }
+      if (!failed && !selectTariff(rankTariffs([...records.values()], profile), profile)) {
+        const prediction = await predictHsCode(description, productDetails);
+        if (prediction && prediction.hsCode) {
+          evidence.searchAttempts!.push({ query: `AI Prediction: ${prediction.hsCode}`, type: 3, outcome: prediction.reasoning });
+          await retrieve(prediction.hsCode, 3);
+        }
       }
     }
   }
